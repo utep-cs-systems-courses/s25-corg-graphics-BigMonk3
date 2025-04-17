@@ -1,4 +1,4 @@
-/** \file lcddraw.h
+/*  \file lcddraw.h
  *  \brief Adapted from RobG's EduKit
  */
 

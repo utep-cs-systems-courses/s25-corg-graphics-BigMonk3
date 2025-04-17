@@ -2,7 +2,7 @@
 
 ### TODO
 
-- [ ] Copy Libraries
+- [X] Copy Libraries
 - [ ] Background
 - [ ] create bird controller
     - [ ] physics
