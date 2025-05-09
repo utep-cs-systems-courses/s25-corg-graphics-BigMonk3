@@ -56,21 +56,43 @@ void drawChar5x7(u_char rcol, u_char rrow, char c,
 {
   u_char col = 0;
   u_char row = 0;
-  u_char bit = 0x01;
+  u_char bit = 0x80;
   u_char oc = c - 0x20;
 
   lcd_setArea(rcol, rrow, rcol + 4, rrow + 7); /* relative to requested col/row */
   while (row < 8) {
     while (col < 5) {
-      u_int colorBGR = (font_5x7[oc][col] & bit) ? fgColorBGR : bgColorBGR;
+      u_int colorBGR = (font_5x7[oc][4-col] & bit) ? fgColorBGR : bgColorBGR;
       lcd_writeColor(colorBGR);
       col++;
     }
     col = 0;
-    bit <<= 1;
+    bit >>= 1;
     row++;
   }
 }
+
+void drawChar11x16(u_char rcol, u_char rrow, char c,
+                   u_int fgColorBGR, u_int bgColorBGR)
+{
+    u_char oc = c - 0x20;       // first glyph is ASCII 0x20
+    if (oc >= 95) return;       // we only have 95 glyphs (0x20…0x7E)
+
+    // for each of the 11 columns in the glyph
+    for (u_char col = 0; col < 11; col++) {
+        // grab the full 16-bit column bitmap
+        u_int colData = font_11x16[oc][col];
+        // mask starts at bit 15 (top) and shifts down
+        u_int mask = 1 << 15;
+        for (u_char row = 0; row < 16; row++, mask >>= 1) {
+            u_int color = (colData & mask) 
+                          ? fgColorBGR 
+                          : bgColorBGR;
+            drawPixel(rcol + (10-col), rrow + row, color);
+        }
+    }
+}
+
 
 /** Draw string at col,row
  *  Type:
@@ -90,7 +112,17 @@ void drawString5x7(u_char col, u_char row, char *string,
   u_char cols = col;
   while (*string) {
     drawChar5x7(cols, row, *string++, fgColorBGR, bgColorBGR);
-    cols += 6;
+    cols -= 6;
+  }
+}
+
+void drawString11x16(u_char col, u_char row, char *string,
+    u_int fgColorBGR, u_int bgColorBGR)
+{
+  u_char cols = col;
+  while (*string) {
+    drawChar11x16(cols, row, *string++, fgColorBGR, bgColorBGR);
+    cols -= 11;
   }
 }
 

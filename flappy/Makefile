@@ -10,7 +10,7 @@ AS              = msp430-elf-gcc -mmcu=${CPU} -c
 all:flappy.elf
 
 #additional rules for files
-flappy.elf: ${COMMON_OBJECTS} flappy.o wdt_handler.o
+flappy.elf: ${COMMON_OBJECTS} flappy.o wdt_handler.o buzzer.o
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^ -lTimer -lLcd 
 
 load: flappy.elf
